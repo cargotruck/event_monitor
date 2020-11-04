@@ -1,0 +1,16 @@
+4625	c	30	3	logon failures
+7045	o	0	0	new service installed
+7040	o	0	0	service state has changed
+2004	o	0	0	firewall rule added or deleted
+2005	o	0	0	firewall rule added or deleted
+106	o	0	0	scheduled task added
+4704	o	0	0	user rights have changed
+4720	o	0	0	new account created on computer
+4726	o	0	0	local user account removed
+4740	o	0	0	account is locked
+4657	o	0	0	"captures registry items added, modified, or deleted"
+4798	o	0	0	captures when a user security group is enumerated
+4799	o	0	0	captures when a user security group is enumerated
+4624	o	0	0	local user account used to login
+4648	o	0	0	captures processes run under a different user's account
+4616	o	0	0	detects plug n play devices inserted into computer
