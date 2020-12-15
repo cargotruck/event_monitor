@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace event_monitor
 {
@@ -39,6 +40,21 @@ namespace event_monitor
             return false;
         }
 
+        private string insert_escapes(string s)
+        {
+            string mod_s = "";
+            foreach(char c in s)
+            {
+                if(c == '\\') mod_s += c;
+                if(c == '(') mod_s += '\\';
+                if(c == ')') mod_s += '\\';
+
+                mod_s += c;
+            }
+
+            return mod_s;
+        }
+
         private bool is_whitelisted(Win_event evnt)
         {
             foreach(Whitelist_event we in Whitelisted.Events)
@@ -48,7 +64,8 @@ namespace event_monitor
                     if(!String.IsNullOrEmpty(we.Exe)) //if ID and EXE have values, test against both
                     {
                         Console.WriteLine("Whitelist ID and EXE match");
-                        if(we.Id == evnt.Id && evnt.Message.Contains(we.Exe,System.StringComparison.CurrentCultureIgnoreCase)) return true;
+                        Console.WriteLine(insert_escapes(we.Exe));
+                        if(we.Id == evnt.Id && Regex.IsMatch(evnt.format_message(),insert_escapes(we.Exe),RegexOptions.IgnoreCase)) return true;
                     }
                     else //if no value in EXE, test only against ID
                     {
@@ -60,7 +77,7 @@ namespace event_monitor
                 else //test only against EXE
                 {
                     Console.WriteLine("Whitelist EXE match");
-                    if(evnt.Message.Contains(we.Exe,System.StringComparison.CurrentCultureIgnoreCase)) return true;
+                    if(Regex.IsMatch(evnt.format_message(),insert_escapes(we.Exe),RegexOptions.IgnoreCase)) return true;
                 }
                 
 
@@ -151,16 +168,17 @@ namespace event_monitor
                         string message = "The below event was detected:\n\n"
                             + "Windows Event ID: " + evnt.Id + "\n"
                             + "Time Stamp: " + evnt.Time_stamp + "\n"
-                            + "Event Information: " + evnt.Message + "\n\n"
+                            + "Event Information: " + evnt.format_message() + "\n\n"
                             + "------------------------------------" + "\n\n"
                             + "This alert was triggered because the above event was "
                             + "recorded AT LEAST once in the computer's event logs";
                         Report report = new Report(message);
+                        /*
                         if(report.email_alert(config.Email_server,config.Sender,config.Recipient))
                         {
                             mark_all_alerted(events);
                         }
-                        
+                        */
                         break;
                     }
 
@@ -173,16 +191,18 @@ namespace event_monitor
                             string message = "The below event was detected:\n\n"
                             + "Windows Event ID: " + evnt.Id + "\n"
                             + "Time Stamp: " + evnt.Time_stamp +"\n"
-                            + "Event Information: " + evnt.Message + "\n\n"
+                            + "Event Information: " + evnt.format_message() + "\n\n"
                             + "------------------------------------" + "\n\n"
                             + "This alert was triggered because the above event was "
                             + "recorded MULTIPLE times in a limited timeframe "
                             + "in the computer's event logs.";
                             Report report = new Report(message);
+                            /*
                             if(report.email_alert(config.Email_server,config.Sender,config.Recipient))
                             {
                                 mark_all_alerted(events);
-                            }                          
+                            }
+                            */
                         }
 
                         break;
@@ -206,7 +226,7 @@ namespace event_monitor
                     foreach(Win_event ev in events) Processed.Add(ev);
                 }
 
-                detected_copy.RemoveAll(i => i.Id == evnt.Id);
+                detected_copy.RemoveAll(i => i.Id == evnt.Id && i.Message == evnt.Message);
             }
         }
 

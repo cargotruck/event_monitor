@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace event_monitor
 {
@@ -27,6 +28,22 @@ namespace event_monitor
             Alerted = evt.Alerted;
         }
 
+        public string format_message()
+        {
+            char[] exclude = {'\n','\r','\t',','};
+            string formated_message = Message;
+
+            for(int i = 0; i < exclude.Length;i++)
+            {
+                string pattern = @"\\u" + ((int)exclude[i]).ToString("X4");
+                string replacement = exclude[i].ToString();
+                formated_message = Regex.Replace(formated_message,pattern,replacement);
+            }
+
+            return formated_message;
+            
+        }
+
         private string rem_spec_chars(string str)
         {
             char[] exclude = {'\n','\r','\t',','};
@@ -47,12 +64,16 @@ namespace event_monitor
                 {
                     mod_str += ch;
                 }
+                else
+                {
+                    mod_str += "\\u" + ((int)ch).ToString("X4"); // insert unicode conversion
+                }
 
                 special = false;
             }
 
             return mod_str;
-        }
+        }        
 
         public int CompareTo(Win_event compare_event)
         {
