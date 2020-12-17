@@ -173,12 +173,12 @@ namespace event_monitor
                             + "This alert was triggered because the above event was "
                             + "recorded AT LEAST once in the computer's event logs";
                         Report report = new Report(message);
-                        /*
+                        
                         if(report.email_alert(config.Email_server,config.Sender,config.Recipient))
                         {
                             mark_all_alerted(events);
                         }
-                        */
+                        
                         break;
                     }
 
@@ -197,12 +197,12 @@ namespace event_monitor
                             + "recorded MULTIPLE times in a limited timeframe "
                             + "in the computer's event logs.";
                             Report report = new Report(message);
-                            /*
+                            
                             if(report.email_alert(config.Email_server,config.Sender,config.Recipient))
                             {
                                 mark_all_alerted(events);
                             }
-                            */
+                            
                         }
 
                         break;
