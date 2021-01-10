@@ -55,6 +55,7 @@ namespace event_monitor
                         alerted = Convert.ToBoolean(vals[3]);
                     }
 
+                    //if(!alerted) Data.Add(new Win_event(id,time_stamp,msg,alerted));
                     Data.Add(new Win_event(id,time_stamp,msg,alerted));
                 }
             }

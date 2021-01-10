@@ -306,7 +306,7 @@ namespace event_monitor
             string log_dir = "logs";
             string captured_events_log = DateTime.Today.ToString("yyyyMMdd") + "captured_events.log";
             captured_events_log = System.IO.Path.Combine(log_dir,captured_events_log);
-
+            
             if(!File.Exists(log_dir)) System.IO.Directory.CreateDirectory(log_dir);
 
             if(!File.Exists(captured_events_log))
@@ -316,7 +316,17 @@ namespace event_monitor
                     sw.Close();
                 }
             }
-            
+
+            Log_utils.remove_old_logs(log_dir);
+            if(Log_utils.exceeds_max_size(captured_events_log))
+            {
+                Log_utils.rename_file(captured_events_log);
+                using (StreamWriter sw = File.CreateText(captured_events_log))
+                {
+                    sw.Close();
+                }
+            }
+
             foreach(EventLog log in logs)
             {
                 foreach(EventLogEntry entry in log.Entries)

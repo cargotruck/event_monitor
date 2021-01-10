@@ -214,19 +214,27 @@ namespace event_monitor
         private void catagorize()
         {
             List<Win_event> detected_copy = Detected;
+            List<int> indexes = new List<int>();
 
+            // Remove whitelisted events from detected events.
+            for(int i = 0;i < detected_copy.Count;i++)
+            {
+                if(is_whitelisted(detected_copy[i])) indexes.Add(i);
+            }
+
+            for(int i = indexes.Count - 1;i > -1;i--)
+            {
+                detected_copy.RemoveAt(indexes[i]);
+            }
+
+            // Evaluate events detected events
             while(detected_copy.Count > 0)
             {
                 Win_event evnt = detected_copy[0];
-                if(!is_whitelisted(evnt))
-                { 
-                    List<Win_event> events = detected_copy.FindAll(i => i.Id == evnt.Id);
-
-                    evaluate(events);
-                    foreach(Win_event ev in events) Processed.Add(ev);
-                }
-
-                detected_copy.RemoveAll(i => i.Id == evnt.Id && i.Message == evnt.Message);
+                List<Win_event> events = detected_copy.FindAll(i => i.Id == evnt.Id);
+                evaluate(events);
+                foreach(Win_event ev in events) Processed.Add(ev);
+                detected_copy.RemoveAll(i => i.Id == evnt.Id);
             }
         }
 
